@@ -65,7 +65,11 @@ function warkslibsGetCurrentLoans() {
 	}
 
 	foreach($libItems as $libItem) {
-		$xml = searchAquaB(urlencode($libItem['title']));
+		$title_search = urlencode($libItem['title']);
+		if (strlen($title_search) > 255) {
+			$title_search = substr($title_search,0,255); 
+		}
+		$xml = searchAquaB($title_search);
 		$doc = new DOMDocument();
 		$doc->loadXML($xml);
 		$xpath = new DOMXPath($doc);
@@ -85,6 +89,7 @@ function warkslibsGetCurrentLoans() {
 			// ID retrieval not work at the moment
 			// Why not?
 			$libItem['id']     = aquaBID($record,$xpath);
+			//Need to output dates etc. as well if want to preserve these?
 			
 			$libItems1[] = $libItem;
 		}
@@ -255,7 +260,7 @@ function createWarksLibsPost($libItem) {
 	$price = $libItem['price'];
 	$link = $libItem['id']; //Need to add other stuff in here to form valid link to OPAC
 	$isbn = $libItem['isbn'];
-	// etc. etc.
+	// 
 	
 	if (!empty($image)) {
 	$content .= "<img src=\"".$image."\" alt=\"".$title."\" />";
@@ -265,6 +270,12 @@ function createWarksLibsPost($libItem) {
 	}
 	if (!empty($description)) {
 	$content .= "<strong>Description:</strong> ".$description."<br />";
+	}
+	if (!empty($isbn)) {
+	$content .= "<strong>ISBN:</strong> ".$isbn."<br />";
+	}
+	if (!empty($id)) {
+	$content .= "<a href=\"http://librarycatalogue.warwickshire.gov.uk/abwarwick/fullrecordinnerframe.ashx?hreciid=|library/vubissmart-marc|\"".$id."Link to item on Warkwickshire Libraries catalogue</a>";
 	}
 	$new_post = array(
 	'post_title' => $title,
@@ -283,12 +294,16 @@ function createWarksLibsPost($libItem) {
 	return false;
 	}
 	else {
-	add_post_meta($post_id, 'object_title', $title); // Need to check it exists first - add this in
-	// add_post_meta($post_id, 'object_maker', $maker);
-	// add_post_meta($post_id, 'object_date', $date); 
-	add_post_meta($post_id, 'object_isbn', $isbn); // Need to check it exists first - add this in
-	//other custom fields here if required
-	add_post_meta($post_id, 'object_price', $price); // Need to check it exists first - add this in
+		if (!empty($title)) {
+			add_post_meta($post_id, 'title', $title);
+		}
+		if (!empty($isbn)) {
+			add_post_meta($post_id, 'isbn', $isbn);
+		}
+		if (!empty($price)) {
+			add_post_meta($post_id, 'price', $price);
+		}
+		//other custom fields here if required
 	
 	// What about loan/due date?
 	}

@@ -105,7 +105,7 @@ function warkslibs_settings_page() {
 
 	?>
 		<div>
-		<h2><?php _e('share what you see plugin options', 'warkslibs-plugin') ?></h2>
+		<h2><?php _e('Warwickshire Libraries plugin options', 'warkslibs-plugin') ?></h2>
 		<form method="post" action="options.php">
 		<?php settings_fields('warkslibs-settings-group'); ?>
 

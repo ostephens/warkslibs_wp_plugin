@@ -157,6 +157,10 @@ function warkslibsShortCode($atts, $content=null) {
 	if(@is_file(ABSPATH.'/wp-content/plugins/warkslibs/warkslibs_functions.php')) {
 		include_once(ABSPATH.'/wp-content/plugins/warkslibs/warkslibs_functions.php'); 
 	}
+	// Only let users with management privileges access this page
+	if (!current_user_can('manage_options'))  {
+			wp_die( __('You do not have sufficient permissions to access this page.') );
+		}
 	// Want to have Search Options and Loan History and Current Loans
 	// Focus on Loan History/Current Loans first
 	//
